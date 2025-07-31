@@ -9,7 +9,10 @@ use App\Models\Job;
 
 
 Route::get('/', function () {
-    return view("home");
+
+   return view("jobs", [
+    'jobs' => Job::all()
+   ]);
 });
 
 Route::get('/jobs', function () {
