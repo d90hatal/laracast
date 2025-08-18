@@ -1,88 +1,25 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Job;
+use App\Http\Controllers\JobController;
 
 // Web Routes Definition
 
 
-// Home page route
 Route::get('/', function () {
     return view("home");
 });
 
-// Display paginated list of jobs with their employers
-Route::get('/jobs/index', function () {
-    return view("jobs.index", [
-        'jobs' => Job::with('employer')->latest()->cursorPaginate(3)
-    ]);
-});
-
-// Show job creation form
-Route::get('/jobs/create', function () {
-    return view("jobs.create");
-});
-
-// Show job edit form
-Route::get('/jobs/{id}/edit', function ($id) {
-    $job = Job::find((int) $id);
-    return view("jobs.edit", [
-        'job' => $job
-    ]);
-});
-
-// Update job
-Route::patch('/jobs/{id}', function ($id) {
-    // Validate form input
-    request()->validate([
-        'title' => 'required | min:3',
-        'salary' => 'required',
-    ]);
-
-    // Update job
-    $job = Job::findOrFail((int) $id);
-    $job->update([
-        'title' => request('title'),
-        'salary' => request('salary'),
-    ]);
-    return redirect('/jobs/show/' . $id);
-}); 
-
-// Delete job
-Route::delete('/jobs/{id}', function ($id) {
-    Job::findOrFail((int) $id)->delete();
-    return redirect('/jobs/index');
-});
-
-// Display single job details
-Route::get('/jobs/show/{id}', function ($id) {
-    $job = Job::find((int) $id);
-    return view("jobs.show", [
-        'job' => $job
-    ]);
-});
-
+// Job routes for managing the complete job lifecycle (listing, creation, modification, removal)
+Route::get('/jobs/index', [JobController::class, 'index']);
+Route::get('/jobs/create', [JobController::class, 'create']);
+Route::get('/jobs/{job}/edit', [JobController::class, 'edit']);
+Route::patch('/jobs/{job}', [JobController::class, 'update']);
+Route::delete('/jobs/{job}', [JobController::class, 'destroy']);
+Route::get('/jobs/show/{job}', [JobController::class, 'show']);
+Route::post('/jobs', [JobController::class, 'store']);
 
 // Contact page route
 Route::get('/contact', function () {
     return view("contact");
 });
-
-// Handle job creation form submission
-Route::post('/jobs', function () {
-    // Validate form input
-    request()->validate([
-        'title' => 'required | min:3',
-        'salary' => 'required',
-    ]);
-
-    // Create new job and assign to employer ID 1
-    Job::create([
-        'title' => request('title'),
-        'salary' => request('salary'),
-        'employer_id' => 1,
-    ]);
-
-    return redirect('/jobs/index');
-});
-
