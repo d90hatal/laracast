@@ -35,12 +35,12 @@ class JobController extends Controller
             'title' => request('title'),
             'salary' => request('salary'),
         ]);
-        return redirect('/jobs/show/' . $job->id);
+        return redirect()->route('jobs.show', $job);
     }
 
     public function destroy(Job $job){
         $job->delete();
-        return redirect('/jobs/index');
+        return redirect()->route('jobs.index');
     }
 
     public function store(){
@@ -49,12 +49,12 @@ class JobController extends Controller
             'salary' => 'required',
         ]);
 
-        Job::create([
+        $newJob = Job::create([
             'title' => request('title'),
             'salary' => request('salary'),
             'employer_id' => 1,
         ]);
-        return redirect('/jobs/index');
+        return redirect()->route('jobs.index');
     }
 
 }
