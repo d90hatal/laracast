@@ -20,7 +20,7 @@ class SessionController extends Controller
         ]);
         if (!Auth::attempt($attributes)) {
             throw ValidationException::withMessages([
-                'email' => 'your provided credentials could not be verified.',
+                'email' => 'your provided credentials could not be verified.', 
             ]);
         }
     // regenerate the token to prevent session fixation
